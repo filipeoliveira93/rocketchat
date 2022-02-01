@@ -48,9 +48,9 @@ export default function PaginaInicial() {
 	const roteamento = useRouter();
 	return (
 		<>
-
+			{/* css fundo*/}
 			<Box
-				styleSheet={{
+				styleSheet={{ 
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "left",
