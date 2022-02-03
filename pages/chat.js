@@ -2,19 +2,40 @@ import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
 import { createClient } from '@supabase/supabase-js'
+import {useRouter } from 'next/router'
+import {ButtonSendSticker} from '../source/components/ButtonSendSticker'
 
+// https://avatars.githubusercontent.com/u/3694?v=4
 
 const supabase_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQwODE3MywiZXhwIjoxOTU4OTg0MTczfQ.EZ0Ol-a0CWhpYkObjvMQRAao_JwG7wmOM66812CudGw'
 //chave 
 const supabase_URL = 'https://twrsqmecoqpvckxwsvjy.supabase.co'
 const supabase_Client = createClient(supabase_URL, supabase_KEY)
 
+function listeningMessage(addMessage) {
+	return supabase_Client
+		.from('mensagens') //nome da tabela
+		.on("INSERT", (liveResponse) => {
+			addMessage(liveResponse.new)
 
+		})
+		.subscribe();
+}
 
 export default function ChatPage() {
 	// Sua lógica vai aqui
+	const roteamento = useRouter()
+	const usuarioLogado = roteamento.query.username
 	const [message, setMessage] = React.useState("");
-	const [ListMessages, setListMessages] = React.useState([]);
+	const [ListMessages, setListMessages] = React.useState([
+		// { 
+		// 	id: 1,
+		// 	user: 'Tfp',
+		// 	text: ":sticker: https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_1.png",
+
+		// }
+	]);
+	
 	// ./Sua lógica vai aqui
 
 	React.useEffect( () => { //essa função recebe tudo que tem um funcionamento diferente do carregamento de estages do react
@@ -22,33 +43,36 @@ export default function ChatPage() {
 		.from('mensagens' ) //peganod a tabela dentro do supabase
 		.select('*') //pegando tudo da tabela
 		.order( 'id', {ascending: false }) //vai pegar o array de mensagens em ordem inversa, ultimo que entra é o primeiro a ser visto
-		.then(({data, error }) => {  
+		.then(({data}) => {  
 			setListMessages(data)
 			// console.log('Dados supabase', data)
 		});
-
-
-	}, [])
-
-
+		const subscription = listeningMessage((newMessage) => {
+			// handleNewMessage(newMessage)
+			setListMessages((valoratual) => { //chama a função que cria a lista de mensagens
+				return [
+					newMessage,
+						...valoratual,]
+			});
+		});
+		return () => {
+			subscription.unsubscribe();
+		}
+	}, []);
 	function handleNewMessage(newMessage) {
 		const message = {
 			// id: ListMessages.length + 1,
-			user: "username",
+			user: usuarioLogado,
 			text: newMessage,
 		};
-		setMessage("");
 		supabase_Client.from('mensagens').insert([message])
 		.then(({data}) => {
-			console.log('mensagem', data)
-			setListMessages([
-				//chama a função que cria a lista de mensagens
-				data[0],
-				...ListMessages
-	
-			]);
-		})
-		;
+			console.log(`mensagem`, data)
+			
+		});
+		setMessage('');
+
+		
 	}
 	return (
 		<Box
@@ -88,12 +112,13 @@ export default function ChatPage() {
 						borderRadius: "15px",
 						padding: "16px",
 					}}>
-					<MessageList mensagens={ListMessages}></MessageList>
+					<MessageList mensagens={ListMessages}/>
 					<Box
 						as='form'
 						styleSheet={{
 							display: "flex",
-							flexDirection: "column",
+							flexDirection: "auto",
+							
 							alignItems: "bottom",
 						}}>
 						{/* {ListMessages.map((message) => {
@@ -113,7 +138,7 @@ export default function ChatPage() {
 									event.preventDefault(); // vai evitar pular linha quando enter for pressionado
 
 									handleNewMessage(message);
-									console.log(ListMessages);
+									// console.log(ListMessages);
 								}
 							}}
 							placeholder='Insira sua mensagem aqui...'
@@ -130,11 +155,17 @@ export default function ChatPage() {
 								color: appConfig.theme.colors.neutrals[200],
 							}}
 						/>
+						<ButtonSendSticker
+							onStickerClick={(sticker) => {
+								// console.log('usando o compontente')
+								handleNewMessage(':sticker: ' + sticker)
+							}}
+						/>
 					</Box>
 				</Box>
 			</Box>
 		</Box>
-	);
+	)
 }
 
 function Header() {
@@ -157,7 +188,6 @@ function Header() {
 }
 
 function MessageList(props) {
-	console.log("MessageList", props.ListMessages);
 	return (
 		<Box
 			tag='ul'
@@ -196,7 +226,7 @@ function MessageList(props) {
 									display: "inline-block",
 									marginRight: "8px",
 								}}
-								src={`https://github.com/filipeoliveira93.png`}
+								src={`https://github.com/${mensagem.user}.png`}
 							/>
 							<Text tag='strong'>{mensagem.user}</Text>
 							<Text
@@ -209,11 +239,24 @@ function MessageList(props) {
 								{new Date().toLocaleDateString()}
 							</Text>
 						</Box>
-						{mensagem.text}
+						{mensagem.text.startsWith(':sticker:') 
+						? (
+							<Image
+							styleSheet={{
+								maxWidth: '150px',
+							}}
+							src={mensagem.text.replace(':sticker:', '')}/>
+						) : 
+						(
+							mensagem.text
+						)}
+						
 					</Text>
 				);
 			})}
 			
 		</Box>
 	)
+	// console.log("MessageList", props.ListMessages);
 }
+

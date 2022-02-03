@@ -6,7 +6,7 @@ import appConfig from "../config.json";
 
 
 function Title(props) {
-	console.log(props);
+	// console.log(props);
 	const Tag = props.tag || "h1"; // tag pode ser h1, h2, h3, p etc
 	return (
 		<>
@@ -20,6 +20,9 @@ function Title(props) {
 		</>
 	);
 }
+
+
+
 
 // function HomePage() {
 //     return (
@@ -44,8 +47,54 @@ function Title(props) {
 
 export default function PaginaInicial() {
 	
-	const [username, setUsername]= React.useState(''); //use state vai entregar um array com um valor e uma função para alterar o valor
+	
+	const [username, setUsername]= React.useState('usuario'); //use state vai entregar um array com um valor e uma função para alterar o valor
 	const roteamento = useRouter();
+	function userInfo() {
+		if (username.length > 2) {
+			console.log(username)
+			return (
+				<>
+				
+				</>
+			)
+		}
+		else {
+			console.log('teste')
+			return (
+				<>
+					<Image
+								// valeu= {() => (username.length ? )},
+								styleSheet={{
+									width: "100%",
+									minwidth: "50%",
+									marginTop: "15px",
+									// borderRadius: "50%",
+									marginBottom: "15px",
+									// filter: "grayscale(100%)",
+								}}
+								
+								
+								src={`https://github.com/peas.png`}
+							/>
+							<Text
+								variant="body4"
+								styleSheet={{
+									fontSize: "14px",
+									// weight: "100%",
+									color: appConfig.theme.colors.neutrals[200],
+									backgroundColor: appConfig.theme.colors.neutrals[900],
+									padding: "2px 60px",
+									// borderRadius: "1000px"
+								}}>
+								{username}
+							</Text>
+				</>
+			)
+		}
+		
+	}
+
 	return (
 		<>
 			{/* css fundo*/}
@@ -65,17 +114,20 @@ export default function PaginaInicial() {
 					styleSheet={{
 						display: "flex",
 						alignItems: "center",
-						justifyContent: "space-between",
+						justifyContent: "space-around",
 						flexDirection: {
-							xs: "column",
+							xs: "row",
 							sm: "row",
 						},
 						width: "100%",
-						maxWidth: "600px",
+						maxWidth: "500px",
+						Height: "600px",
+
 						borderRadius: "10px",
 						height: "200px",
-						padding: "32px",
-						margin: "60px",
+						padding: "10px",
+						margin: {xs: "10px", ys: "50px"},
+
 						marginTop: "-200px",
 						boxShadow: "0 2px 10px 0 rgb(0 0 0 / 20%)",
 						backgroundColor: appConfig.theme.colors.neutrals[900],
@@ -85,13 +137,14 @@ export default function PaginaInicial() {
 						as="form"
 						onSubmit= {(evento) => 
 							{evento.preventDefault();
-							roteamento.push('/chat');}} //muda para a página de chat quando o entrar é clickado
-						styleSheet={{
+							roteamento.push(`/chat?username=${username}`);}} //muda para a página de chat quando o entrar é clickado
+						
+							styleSheet={{
 							display: "flex",
 							flexDirection: "column",
 							alignItems: "center",
 							justifyContent: "center",
-							width: { xs: "100%", sm: "50%" },
+							width: { xs: "50%", sm: "50%" },
 							textAlign: "center",
 							marginBottom: "16px",
 						}}>
@@ -120,7 +173,7 @@ export default function PaginaInicial() {
 							value={username}
 							placeHolder="Digite seu usuário GitHUb"
 							 onChange={function(event) {
-								console.log(event.target.value);
+								// console.log(event.target.value);
 								//de onde vem o valor?
 								const valor = event.target.value;
 								//trocar o valor da variável e avisar quem precisa saber
@@ -153,43 +206,77 @@ export default function PaginaInicial() {
 					{/* Photo Area */}
 					<Box
 						styleSheet={{
+							// visibility: {xs:'hidden', lg: 'visible'},
 							display: "flex",
 							flexDirection: "column",
 							alignItems: "center",
-							maxWidth: "180px",
-							minwidth: "180px",
-							padding: "0px",
+							justifyContent: "center",
+							// Height: {sm: "80%", lg:"120%"},
+							width: "140px",
+							height: "120%",
+							// width: { xs: "40%", lg: "140px"},
+							// Height: {xs: "100%", lg:"120%"},
+							// padding: "10px",
 							backgroundColor: appConfig.theme.colors.neutrals[800],
 							border: "1px solid",
 							borderColor: appConfig.theme.colors.secondary[400],
 							borderRadius: "20px",
-							flex: 1,
-							Height: "250px",
+							// flex: 1,
 							overflow: "hidden",
 						}}>
-						<Image
+							<Image
+								// valeu= {() => (username.length ? )},
+								styleSheet={{
+									width: "100%",
+									minwidth: "50%",
+									marginTop: "15px",
+									// borderRadius: "50%",
+									marginBottom: "15px",
+									// filter: "grayscale(100%)",
+								}}
+								
+								
+								src={`https://github.com/${username}.png`}
+							/>
+							<Text
+								variant="body4"
+								styleSheet={{
+									fontSize: "14px",
+									// weight: "100%",
+									color: appConfig.theme.colors.neutrals[200],
+									backgroundColor: appConfig.theme.colors.neutrals[900],
+									padding: "2px 60px",
+									// borderRadius: "1000px"
+								}}>
+								{username}
+							</Text>
+						{/* <userInfo/> */}
+						{/* <Image
+							// valeu= {() => (username.length ? )},
 							styleSheet={{
-								width: "90%",
-								minwidth: "90%",
+								width: "100%",
+								minwidth: "50%",
 								marginTop: "15px",
-								borderRadius: "50%",
-								marginBottom: "20px",
-								filter: "grayscale(100%)",
+								// borderRadius: "50%",
+								marginBottom: "15px",
+								// filter: "grayscale(100%)",
 							}}
+							
+							
 							src={`https://github.com/${username}.png`}
 						/>
 						<Text
 							variant="body4"
 							styleSheet={{
 								fontSize: "14px",
-								weight: "100%",
+								// weight: "100%",
 								color: appConfig.theme.colors.neutrals[200],
 								backgroundColor: appConfig.theme.colors.neutrals[900],
-								padding: "3px 60px",
+								padding: "2px 60px",
 								// borderRadius: "1000px"
 							}}>
 							{username}
-						</Text>
+						</Text> */}
 					</Box>
 					{/* Photo Area */}
 				</Box>
