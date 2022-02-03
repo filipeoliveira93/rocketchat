@@ -48,7 +48,7 @@ function Title(props) {
 export default function PaginaInicial() {
 	
 	
-	const [username, setUsername]= React.useState('usuario'); //use state vai entregar um array com um valor e uma função para alterar o valor
+	const [username, setUsername]= React.useState('filipeoliveira93'); //use state vai entregar um array com um valor e uma função para alterar o valor
 	const roteamento = useRouter();
 	function userInfo() {
 		if (username.length > 2) {
